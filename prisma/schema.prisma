@@ -15,7 +15,7 @@ model User {
 
   name    String
   email   String @unique
-  picture String
+  image   String
 
   Notes Note[]
 
