@@ -1,0 +1,135 @@
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 1.5rem;
+
+  width: 100%;
+  min-height: 100vh;
+  outline: 1px solid var(--secondary-color);
+
+  &__createButton {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.75rem;
+
+    position: relative;
+
+    width: 100%;
+    height: 3rem;
+    border: none;
+    border-radius: 0;
+    outline: none;
+    padding: 0.5rem 0.125rem;
+
+    font: inherit;
+    font-size: 1.1rem;
+
+    color: var(--primary-color);
+    background-color: var(--secondary-color);
+
+    cursor: pointer;
+    isolation: isolate;
+
+    svg {
+      height: 75%;
+      width: auto;
+
+      border-radius: 0.25rem;
+      fill: var(--secondary-color);
+      background-color: var(--primary-color);
+
+      transform: translateY(-1px);
+    }
+
+    &::after {
+      content: '';
+
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+
+      opacity: 0;
+      background-color: hsla(0, 0%, 50%, 0.25);
+
+      transition: opacity 0.4s ease;
+    }
+
+    &:focus,
+    &:hover {
+      &::after {
+        opacity: 1;
+        transition: none;
+      }
+    }
+  }
+
+  &__heading {
+    position: relative;
+
+    width: 100%;
+
+    font-size: 1.75rem;
+    padding-left: 0.5rem;
+    font-weight: 200;
+
+    &::after {
+      content: '';
+
+      position: absolute;
+      top: 150%;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background-color: var(--secondary-color);
+    }
+  }
+  &__list {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+
+    width: 100%;
+    list-style-type: none;
+
+    &__item {
+      position: relative;
+
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+
+      font-size: 1.1rem;
+
+      isolation: isolate;
+      cursor: pointer;
+      transition: color 0.4s ease;
+
+      &--selected {
+        color: var(--primary-color);
+      }
+
+      &::after {
+        content: '';
+
+        position: absolute;
+        inset: 0;
+
+        opacity: 0;
+        background-color: hsla(0, 0%, 50%, 0.25);
+
+        transition: opacity 0.4s ease;
+      }
+
+      &:focus,
+      &:hover {
+        &::after {
+          opacity: 1;
+          transition: none;
+        }
+      }
+    }
+  }
+}
