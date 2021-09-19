@@ -1,2 +1,56 @@
-.list {
+.main {
+  width: 100%;
+  background-color: hsla(0, 0%, 50%, 0.25);
+
+  &__wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 100%;
+
+    padding: 0rem 0.75rem;
+    height: 3rem;
+    background-color: hsla(0, 0%, 10%, 0.25);
+
+    &__input {
+      width: 100%;
+
+      padding: 0.25rem;
+      border: none;
+      border-radius: 0.25rem;
+      outline: none;
+      color: var(--ff-color);
+      background-color: hsla(0, 0%, 95%, 0.125);
+
+      font: inherit;
+      font-size: 1rem;
+    }
+  }
+  &__list {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex-direction: column;
+
+    list-style-type: none;
+
+    &__item {
+      width: 100%;
+      padding: 0.5rem;
+
+      cursor: pointer;
+      transition: background-color 0.4s ease;
+
+      &--selected {
+        color: var(--primary-color);
+        background-color: hsla(0, 0%, 95%, 0.125);
+      }
+      &:hover,
+      &:focus {
+        background-color: hsla(0, 0%, 95%, 0.125);
+        transition: none;
+      }
+    }
+  }
 }
