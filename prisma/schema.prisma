@@ -28,11 +28,18 @@ model Note {
 
   title   String
   content String
-  tags    String[]
+  tags    Tag[]
 
-  User User @relation(fields: [userId], references: [id])
-  userId    Int
+  User   User @relation(fields: [userId], references: [id])
+  userId Int
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
+}
+
+model Tag {
+  id Int @id @default(autoincrement())
+
+  name  String
+  notes Note[]
 }
