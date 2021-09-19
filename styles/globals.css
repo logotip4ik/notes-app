@@ -1,6 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&display=swap');
 @import url('./reset.css');
-@import url('./theme.css');
+
+:root {
+  --surface-color: #222831;
+  --primary-color: #ffd369;
+  --secondary-color: #393e46;
+  --ff-color: #eeeeee;
+}
 
 * {
   box-sizing: border-box;
