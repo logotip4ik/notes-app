@@ -6,7 +6,7 @@ export default function useNotes() {
   const { data, error, mutate } = useSWR('/api/note', fetcher);
 
   return {
-    notes: data,
+    notes: data || [],
     mutate,
     isError: !data && error,
     isLoading: !data && !error,
