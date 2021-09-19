@@ -3,12 +3,11 @@ version: '3.1'
 services:
   db:
     ports:
-      - '5432:5432'
+      - '3306:3306'
     image: mysql
     restart: always
     environment:
       MYSQL_DATABASE: notes
-      POSTGRES_USER: postgres
       MYSQL_ROOT_PASSWORD: aboba
 
   adminer:
