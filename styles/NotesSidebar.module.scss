@@ -38,6 +38,9 @@
     &__item {
       width: 100%;
       padding: 0.5rem;
+      padding-right: 2.75rem;
+
+      position: relative;
 
       cursor: pointer;
       transition: background-color 0.4s ease;
@@ -50,6 +53,40 @@
       &:focus {
         background-color: hsla(0, 0%, 95%, 0.125);
         transition: none;
+      }
+
+      &__heading {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        width: 100%;
+      }
+
+      &__delete {
+        position: absolute;
+
+        top: 50%;
+        right: 0.5rem;
+        transform: translate(0, -50%);
+
+        height: 50%;
+        width: auto;
+        outline: 2px solid transparent;
+        outline-offset: -2px;
+        background-color: transparent;
+
+        fill: rgba($color: white, $alpha: 0.5);
+
+        transition: fill 0.4s ease, outline-offset 0.4s ease,
+          outline-color 0.4s ease;
+
+        &:hover,
+        &:focus {
+          fill: #ed5e68;
+          outline-color: #ed5e68;
+          outline-offset: 0px;
+          transition: none;
+        }
       }
     }
   }
