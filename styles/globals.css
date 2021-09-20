@@ -23,3 +23,20 @@ body {
   color: var(--ff-color);
   background-color: var(--surface-color);
 }
+
+.w-tc-editor code[class*='language-'] .token.punctuation,
+.w-tc-editor pre[class*='language-'] .token.punctuation {
+  color: var(--primary-color) !important;
+  font-weight: 800 !important;
+}
+.w-tc-editor code[class*='language-'] .token.bold,
+.w-tc-editor pre[class*='language-'] .token.bold,
+.w-tc-editor code[class*='language-'] .token.important,
+.w-tc-editor pre[class*='language-'] .token.important {
+  color: var(--primary-color) !important;
+  font-weight: 800;
+}
+
+.code-block {
+  color: #fafafa !important;
+}
