@@ -3,8 +3,10 @@ import styles from '../styles/Home.module.css';
 import Head from 'next/head';
 import dynamic from 'next/dynamic';
 import { getSession } from 'next-auth/react';
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
+import marked from 'marked';
+import DOMPurify from 'dompurify';
 import useNotes from '../hooks/useNotes';
 import TagsSidebar from '../components/TagsSidebar';
 import NotesSidebar from '../components/NotesSidebar';
@@ -31,6 +33,7 @@ export default function Home({ user }) {
 
   const [currentTag, setCurrentTag] = useState(initialTags[0]);
   const [currentNote, setCurrentNote] = useState(null);
+  const [isViewingMarkdown, setIsViewingMarkdown] = useState(false);
   const tags = useMemo(() => {
     if (isLoading || !notes) return [];
     const res = new Set(initialTags);
@@ -52,6 +55,20 @@ export default function Home({ user }) {
 
     return res;
   }, [notes, currentTag, isLoading]);
+  const compiledMarkdown = useMemo(() => {
+    if (!currentNote) return '';
+    DOMPurify.addHook('afterSanitizeAttributes', (node) => {
+      if (node.tagName !== 'A') return;
+
+      node.setAttribute('target', '_blank');
+      node.setAttribute('rel', 'noopener noreferrer');
+    });
+
+    const html = marked(currentNote.content, {
+      gfm: true,
+    });
+    return DOMPurify.sanitize(html);
+  }, [currentNote]);
 
   const addNewNote = useCallback(
     () =>
@@ -70,6 +87,7 @@ export default function Home({ user }) {
   );
   const updateNote = useCallback(
     (note) => {
+      setCurrentNote(note);
       mutate(async (cachedNotes) => {
         await fetch(`/api/note/${note.id}`, {
           method: 'POST',
@@ -99,6 +117,9 @@ export default function Home({ user }) {
   );
 
   useHotkeys('ctrl+alt+n', () => addNewNote(), [addNewNote]);
+  useHotkeys('ctrl+alt+j', () => setIsViewingMarkdown((bool) => !bool), {
+    enableOnTags: ['TEXTAREA'],
+  });
 
   if (isError) return <h1>You probably, should&apos;t see this, D_D</h1>;
 
@@ -126,8 +147,15 @@ export default function Home({ user }) {
             onSelectNote={(note) => setCurrentNote(note)}
             onDeleteNote={(note) => deleteNote(note)}
           ></NotesSidebar>
+          <div
+            style={{
+              display: isViewingMarkdown ? 'block' : 'none',
+            }}
+            className="marked-block"
+            dangerouslySetInnerHTML={{ __html: compiledMarkdown }}
+          ></div>
           <CodeEditor
-            value={currentNote ? currentNote.content : ''}
+            value={currentNote?.content || ''}
             language="markdown"
             onChange={debounce(({ target }) =>
               updateNote({
@@ -137,6 +165,7 @@ export default function Home({ user }) {
               }),
             )}
             style={{
+              display: isViewingMarkdown ? 'none' : 'block',
               width: '100%',
               lineHeight: '1.75',
               fontSize: '16px',
