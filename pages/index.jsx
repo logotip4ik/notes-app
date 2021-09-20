@@ -3,7 +3,7 @@ import styles from '../styles/Home.module.css';
 import Head from 'next/head';
 import dynamic from 'next/dynamic';
 import { getSession } from 'next-auth/react';
-import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import useNotes from '../hooks/useNotes';
 import TagsSidebar from '../components/TagsSidebar';
