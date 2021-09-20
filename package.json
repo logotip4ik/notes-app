@@ -11,10 +11,10 @@
   "dependencies": {
     "@prisma/client": "2.29.1",
     "@types/yup": "^0.29.13",
-    "@uiw/react-markdown-preview": "^3.3.3",
     "@uiw/react-textarea-code-editor": "1.4.4",
-    "dompurify": "^2.3.2",
+    "dompurify": "^2.3.3",
     "jsdom": "^17.0.0",
+    "marked": "^3.0.4",
     "next": "11.1.2",
     "next-auth": "^4.0.0-beta.2",
     "next-remove-imports": "^1.0.5",
