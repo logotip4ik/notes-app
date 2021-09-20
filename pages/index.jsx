@@ -87,19 +87,15 @@ export default function Home({ user }) {
   );
   const deleteNote = useCallback(
     (note) => {
-      mutate(async (cachedNotes) => {
-        const res = await fetch(`/api/note/${note.id}`, { method: 'DELETE' });
-        if (!res.ok) return;
-        const newNotes = cachedNotes.reduce(
-          (acc, cachedNote) =>
-            cachedNote.id !== note.id ? [...acc, cachedNote] : acc,
-          [],
-        );
-
-        return newNotes;
-      });
+      const newNotes = notes.reduce(
+        (acc, cachedNote) =>
+          cachedNote.id !== note.id ? [...acc, cachedNote] : acc,
+        [],
+      );
+      mutate(newNotes, false);
+      fetch(`/api/note/${note.id}`, { method: 'DELETE' }).then((res) => res.ok);
     },
-    [mutate],
+    [mutate, notes],
   );
 
   useHotkeys('ctrl+alt+n', () => addNewNote(), [addNewNote]);
