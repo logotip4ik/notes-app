@@ -8,7 +8,7 @@
   --ff-color: #eeeeee;
 }
 
-* {
+*:not(.marked-block *) {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -36,7 +36,38 @@ body {
   color: var(--primary-color) !important;
   font-weight: 800;
 }
+.w-tc-editor code[class*='language-'] .token.url,
+.w-tc-editor pre[class*='language-'] .token.url {
+  color: var(--primary-color) !important;
+  font-weight: 800;
+}
+.w-tc-editor code[class*='language-'] .token.content {
+  color: var(--ff-color) !important;
+  font-weight: 400;
+}
 
 .code-block {
   color: #fafafa !important;
+}
+
+.marked-block {
+  padding: 15px;
+  width: 100%;
+  height: 100vh;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.marked-block a {
+  color: rgba(200, 200, 200, 0.75);
+  transition: color 0.4s ease;
+}
+.marked-block a:hover,
+.marked-block a:focus {
+  color: rgba(225, 225, 225, 1);
+  transition: none;
+}
+.marked-block a::before {
+  content: '↗ ';
+  font-size: 130%;
 }
