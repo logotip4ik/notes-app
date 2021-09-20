@@ -52,10 +52,6 @@ export default function Home({ user }) {
 
     return res;
   }, [notes, currentTag, isLoading]);
-  const codeValue = useMemo(() => {
-    if (!currentNote) return '';
-    return currentNote.content;
-  }, [currentNote]);
 
   const addNewNote = useCallback(
     () =>
@@ -89,6 +85,22 @@ export default function Home({ user }) {
     },
     [mutate],
   );
+  const deleteNote = useCallback(
+    (note) => {
+      mutate(async (cachedNotes) => {
+        const res = await fetch(`/api/note/${note.id}`, { method: 'DELETE' });
+        if (!res.ok) return;
+        const newNotes = cachedNotes.reduce(
+          (acc, cachedNote) =>
+            cachedNote.id !== note.id ? [...acc, cachedNote] : acc,
+          [],
+        );
+
+        return newNotes;
+      });
+    },
+    [mutate],
+  );
 
   useHotkeys('ctrl+alt+n', () => addNewNote(), [addNewNote]);
 
@@ -115,8 +127,8 @@ export default function Home({ user }) {
           <NotesSidebar
             notes={filteredNotes}
             currentNote={currentNote}
-            onSelectNote={(noteIdx) => setCurrentNote(noteIdx)}
-            onDeleteNote={() => {}}
+            onSelectNote={(note) => setCurrentNote(note)}
+            onDeleteNote={(note) => deleteNote(note)}
           ></NotesSidebar>
           <CodeEditor
             value={currentNote ? currentNote.content : ''}
