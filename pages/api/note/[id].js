@@ -77,6 +77,30 @@ async function updateUserNote(req, res, user) {
  * @param {import("next").NextApiRequest} req
  * @param {import("next").NextApiResponse} res
  */
+async function deleteUserNote(req, res, user) {
+  if (isNaN(req.query.id)) return res.status(400).end();
+  const id = parseInt(req.query.id);
+
+  const noteFromDB = await prisma.note.findUnique({
+    where: { id },
+    include: { User: true },
+  });
+  if (noteFromDB.User.email !== user.email) return res.status(400).end();
+
+  await prisma.note.delete({
+    where: { id },
+  });
+
+  res.status(200).end();
+
+  // res.json(createdNote);
+  await prisma.$disconnect();
+}
+
+/**
+ * @param {import("next").NextApiRequest} req
+ * @param {import("next").NextApiResponse} res
+ */
 export default async function handler(req, res) {
   const session = await getSession({ req });
   if (!session) {
@@ -88,6 +112,8 @@ export default async function handler(req, res) {
   // prettier-ignore
   if (req.method === 'POST')
     return await updateUserNote(req, res, session.user);
+  if (req.method === 'DELETE')
+    return await deleteUserNote(req, res, session.user);
 
   if (!res.writableEnded || !res.headersSent) res.status(400).end();
 }
