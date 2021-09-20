@@ -1,5 +1,7 @@
+import '@uiw/react-textarea-code-editor/dist.css';
 import styles from '../styles/Home.module.css';
 import Head from 'next/head';
+import dynamic from 'next/dynamic';
 import { getSession } from 'next-auth/react';
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -11,6 +13,18 @@ const initialTags = [
   { id: 'all-notes', name: 'All Notes' },
   { id: 'favorites', name: 'Favorites' },
 ];
+
+const CodeEditor = dynamic(
+  () => import('@uiw/react-textarea-code-editor').then((mod) => mod.default),
+  { ssr: false },
+);
+const debounce = (callback, delay = 500) => {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => callback(...args), delay);
+  };
+};
 
 export default function Home({ user }) {
   const { notes, isLoading, isError, mutate } = useNotes();
@@ -38,6 +52,10 @@ export default function Home({ user }) {
 
     return res;
   }, [notes, currentTag, isLoading]);
+  const codeValue = useMemo(() => {
+    if (!currentNote) return '';
+    return currentNote.content;
+  }, [currentNote]);
 
   const addNewNote = useCallback(
     () =>
@@ -47,16 +65,34 @@ export default function Home({ user }) {
           body: JSON.stringify({ title: '', content: '' }),
         });
         const note = await res.json();
+        setCurrentTag(initialTags[0]);
         setCurrentNote(note);
 
         return [...cachedNotes, note];
       }, false),
     [mutate],
   );
+  const updateNote = useCallback(
+    (note) => {
+      mutate(async (cachedNotes) => {
+        await fetch(`/api/note/${note.id}`, {
+          method: 'POST',
+          body: JSON.stringify(note),
+        });
+
+        const newNotes = cachedNotes.map((cachedNote) =>
+          cachedNote.id === note.id ? note : cachedNote,
+        );
+
+        return newNotes;
+      }, false);
+    },
+    [mutate],
+  );
 
   useHotkeys('ctrl+alt+n', () => addNewNote(), [addNewNote]);
 
-  if (isError) return <h1>You probably, should&quot;t see this, D_D</h1>;
+  if (isError) return <h1>You probably, should&apos;t see this, D_D</h1>;
 
   return (
     <>
@@ -70,15 +106,38 @@ export default function Home({ user }) {
           <TagsSidebar
             tags={tags ? tags : []}
             currentTag={currentTag}
-            onSelectTag={(tag) => setCurrentTag(tag)}
+            onSelectTag={(tag) => {
+              setCurrentTag(tag);
+              setCurrentNote(null);
+            }}
             onCreateNote={() => addNewNote()}
           ></TagsSidebar>
           <NotesSidebar
             notes={filteredNotes}
             currentNote={currentNote}
-            onSelectNote={(note) => setCurrentNote(note)}
+            onSelectNote={(noteIdx) => setCurrentNote(noteIdx)}
             onDeleteNote={() => {}}
           ></NotesSidebar>
+          <CodeEditor
+            value={currentNote ? currentNote.content : ''}
+            language="markdown"
+            onChange={debounce(({ target }) =>
+              updateNote({
+                ...currentNote,
+                title: target.value.split('\n')[0],
+                content: target.value,
+              }),
+            )}
+            style={{
+              width: '100%',
+              lineHeight: '1.75',
+              fontSize: '16px',
+              fontFamily: 'Consolas,Liberation Mono,Menlo,monospace',
+            }}
+            minHeight={80}
+            placeholder="Enter your markdown"
+            padding={15}
+          ></CodeEditor>
         </div>
       )}
     </>
