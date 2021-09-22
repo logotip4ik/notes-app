@@ -8,35 +8,24 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import marked from 'marked';
 import DOMPurify from 'dompurify';
 import useNotes from '../hooks/useNotes';
+import { constants, functions } from '../helpers';
 import TagsSidebar from '../components/TagsSidebar';
 import NotesSidebar from '../components/NotesSidebar';
-
-const initialTags = [
-  { id: 'all-notes', name: 'All Notes' },
-  { id: 'favorites', name: 'Favorites' },
-];
 
 const CodeEditor = dynamic(
   () => import('@uiw/react-textarea-code-editor').then((mod) => mod.default),
   { ssr: false },
 );
-const debounce = (callback, delay = 500) => {
-  let timer;
-  return (...args) => {
-    clearTimeout(timer);
-    timer = setTimeout(() => callback(...args), delay);
-  };
-};
 
 export default function Home({ user }) {
   const { notes, isLoading, isError, mutate } = useNotes();
 
-  const [currentTag, setCurrentTag] = useState(initialTags[0]);
+  const [currentTag, setCurrentTag] = useState(constants.initialTags[0]);
   const [currentNote, setCurrentNote] = useState(null);
   const [isViewingMarkdown, setIsViewingMarkdown] = useState(false);
   const tags = useMemo(() => {
     if (isLoading || !notes) return [];
-    const res = new Set(initialTags);
+    const res = new Set(constants.initialTags);
 
     for (const note of notes) {
       if (note.tags.length !== 0) res.add(...note.tags);
@@ -88,6 +77,11 @@ export default function Home({ user }) {
   const updateNote = useCallback(
     (note) => {
       setCurrentNote(note);
+      if (!note.id)
+        return localStorage.setItem(
+          constants.scratchpadRef,
+          JSON.stringify(note),
+        );
       mutate(async (cachedNotes) => {
         await fetch(`/api/note/${note.id}`, {
           method: 'POST',
@@ -120,6 +114,14 @@ export default function Home({ user }) {
   useHotkeys('ctrl+alt+j', () => setIsViewingMarkdown((bool) => !bool), {
     enableOnTags: ['TEXTAREA'],
   });
+
+  useEffect(() => {
+    const scratchpad = localStorage.getItem(constants.scratchpadRef);
+    if (!scratchpad) return;
+    try {
+      setCurrentNote(JSON.parse(scratchpad));
+    } catch (err) {}
+  }, []);
 
   if (isError) return <h1>You probably, should&apos;t see this, D_D</h1>;
 
@@ -157,7 +159,7 @@ export default function Home({ user }) {
           <CodeEditor
             value={currentNote?.content || ''}
             language="markdown"
-            onChange={debounce(({ target }) =>
+            onChange={functions.debounce(({ target }) =>
               updateNote({
                 ...currentNote,
                 title: target.value.split('\n')[0],
