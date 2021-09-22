@@ -67,8 +67,11 @@ export default function Home({ user }) {
           body: JSON.stringify({ title: '', content: '' }),
         });
         const note = await res.json();
-        setCurrentTag(initialTags[0]);
+        setCurrentTag(constants.initialTags[0]);
         setCurrentNote(note);
+
+        const editor = document.querySelector('[data-editor]');
+        if (editor) editor.focus();
 
         return [...cachedNotes, note];
       }, false),
@@ -176,6 +179,7 @@ export default function Home({ user }) {
             minHeight={80}
             placeholder="Enter your markdown"
             padding={15}
+            data-editor
           ></CodeEditor>
         </div>
       )}
