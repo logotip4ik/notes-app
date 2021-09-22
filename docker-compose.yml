@@ -4,11 +4,11 @@ services:
   db:
     ports:
       - '3306:3306'
-    image: mysql
+    image: postgres
     restart: always
     environment:
-      MYSQL_DATABASE: notes
-      MYSQL_ROOT_PASSWORD: aboba
+      POSTGRES_DB: notes
+      POSTGRES_PASSWORD: aboba
 
   adminer:
     image: adminer
