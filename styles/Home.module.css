@@ -1,4 +1,6 @@
 .main {
+  --bottom-bar-height: 2rem;
+
   display: flex;
 }
 
@@ -12,4 +14,15 @@
 }
 .main > *:nth-child(2) {
   flex-basis: 100%;
+}
+.main > *:nth-child(3) {
+  flex-basis: 100%;
+}
+.main > *:nth-child(3) > *:first-child {
+  height: calc(100vh - var(--bottom-bar-height));
+}
+
+.main__editors {
+  display: grid;
+  grid-template-rows: auto var(--bottom-bar-height);
 }
