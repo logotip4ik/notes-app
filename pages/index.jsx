@@ -113,7 +113,9 @@ export default function Home({ user }) {
     [mutate, notes],
   );
 
-  useHotkeys('ctrl+alt+n', () => addNewNote(), [addNewNote]);
+  useHotkeys('ctrl+alt+n', () => addNewNote(), {
+    enableOnTags: ['TEXTAREA'],
+  });
   useHotkeys('ctrl+alt+j', () => setIsViewingMarkdown((bool) => !bool), {
     enableOnTags: ['TEXTAREA'],
   });
