@@ -9,6 +9,7 @@ import marked from 'marked';
 import DOMPurify from 'dompurify';
 import useNotes from '../hooks/useNotes';
 import { constants, functions } from '../helpers';
+import BottomBar from '../components/BottomBar';
 import TagsSidebar from '../components/TagsSidebar';
 import NotesSidebar from '../components/NotesSidebar';
 
@@ -23,6 +24,7 @@ export default function Home({ user }) {
   const [currentTag, setCurrentTag] = useState(constants.initialTags[0]);
   const [currentNote, setCurrentNote] = useState(null);
   const [isViewingMarkdown, setIsViewingMarkdown] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
   const tags = useMemo(() => {
     if (isLoading || !notes) return [];
     const res = new Set(constants.initialTags);
@@ -62,6 +64,7 @@ export default function Home({ user }) {
   const addNewNote = useCallback(
     () =>
       mutate(async (cachedNotes) => {
+        setIsSyncing(true);
         const res = await fetch('/api/note', {
           method: 'POST',
           body: JSON.stringify({ title: '', content: '' }),
@@ -73,18 +76,21 @@ export default function Home({ user }) {
         const editor = document.querySelector('[data-editor]');
         if (editor) editor.focus();
 
+        setIsSyncing(false);
         return [...cachedNotes, note];
       }, false),
     [mutate],
   );
+  // eslint-disable-next-line
   const updateNote = useCallback(
-    (note) => {
+    functions.debounce((note) => {
       setCurrentNote(note);
       if (!note.id)
         return localStorage.setItem(
           constants.scratchpadRef,
           JSON.stringify(note),
         );
+      setIsSyncing(true);
       mutate(async (cachedNotes) => {
         await fetch(`/api/note/${note.id}`, {
           method: 'POST',
@@ -95,9 +101,11 @@ export default function Home({ user }) {
           cachedNote.id === note.id ? note : cachedNote,
         );
 
+        setIsSyncing(false);
+
         return newNotes;
       }, false);
-    },
+    }),
     [mutate],
   );
   const deleteNote = useCallback(
@@ -154,35 +162,42 @@ export default function Home({ user }) {
             onSelectNote={(note) => setCurrentNote(note)}
             onDeleteNote={(note) => deleteNote(note)}
           ></NotesSidebar>
-          <div
-            style={{
-              display: isViewingMarkdown ? 'block' : 'none',
-            }}
-            className="marked-block"
-            dangerouslySetInnerHTML={{ __html: compiledMarkdown }}
-          ></div>
-          <CodeEditor
-            value={currentNote?.content || ''}
-            language="markdown"
-            onChange={functions.debounce(({ target }) =>
-              updateNote({
-                ...currentNote,
-                title: target.value.split('\n')[0],
-                content: target.value,
-              }),
-            )}
-            style={{
-              display: isViewingMarkdown ? 'none' : 'block',
-              width: '100%',
-              lineHeight: '1.75',
-              fontSize: '16px',
-              fontFamily: 'Consolas,Liberation Mono,Menlo,monospace',
-            }}
-            minHeight={80}
-            placeholder="Enter your markdown"
-            padding={15}
-            data-editor
-          ></CodeEditor>
+          <div className={styles.main__editors}>
+            <div
+              style={{
+                display: isViewingMarkdown ? 'block' : 'none',
+              }}
+              className="marked-block"
+              dangerouslySetInnerHTML={{ __html: compiledMarkdown }}
+            ></div>
+            <CodeEditor
+              value={currentNote?.content || ''}
+              language="markdown"
+              onChange={({ target }) =>
+                updateNote({
+                  ...currentNote,
+                  title: target.value.split('\n')[0],
+                  content: target.value,
+                })
+              }
+              style={{
+                display: isViewingMarkdown ? 'none' : 'block',
+                fontSize: '16px',
+                fontFamily: 'Consolas,Liberation Mono,Menlo,monospace',
+              }}
+              minHeight={40}
+              placeholder="Enter your markdown"
+              padding={15}
+              data-editor
+            ></CodeEditor>
+            <BottomBar
+              isSyncing={isSyncing}
+              user={user}
+              onToggleMarkdownPreview={() =>
+                setIsViewingMarkdown((bool) => !bool)
+              }
+            ></BottomBar>
+          </div>
         </div>
       )}
     </>
