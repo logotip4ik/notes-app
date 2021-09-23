@@ -1,7 +1,16 @@
-import { useMemo } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import styles from '../styles/BottomBar.module.scss';
 
 let initial = true;
+const getCurrentTime = () =>
+  new Intl.DateTimeFormat('ua', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+  }).format(new Date());
+
+const animate = { opacity: 1 };
+const exit = { opacity: 0 };
 
 export default function BottomBar({
   user,
@@ -10,22 +19,6 @@ export default function BottomBar({
   onSelectScratchPad,
   onToggleMarkdownPreview,
 }) {
-  const lastlySyncedText = useMemo(() => {
-    const currentTime = new Intl.DateTimeFormat('ua', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hourCycle: 'h23',
-    }).format(new Date());
-    let res = 'In Sync';
-
-    if (!initial && isSyncing) res = 'Syncing';
-    if (!initial && !isSyncing) res = `Synced ${currentTime}`;
-
-    initial = false;
-
-    return `${res} `;
-  }, [isSyncing]);
-
   return (
     <div className={styles.main}>
       <ul className={styles.main__list}>
@@ -73,7 +66,29 @@ export default function BottomBar({
               : styles['main__list__item--in-sync']
           }`}
         >
-          {lastlySyncedText}
+          <AnimatePresence exitBeforeEnter>
+            {isSyncing ? (
+              <motion.span
+                key={1}
+                initial={exit}
+                animate={animate}
+                exit={exit}
+                transition={{ duration: 0.4 }}
+              >
+                Syncing{' '}
+              </motion.span>
+            ) : (
+              <motion.span
+                key={2}
+                initial={exit}
+                animate={animate}
+                exit={exit}
+                transition={{ duration: 0.4 }}
+              >
+                Synced {getCurrentTime()}{' '}
+              </motion.span>
+            )}
+          </AnimatePresence>
         </li>
       </ul>
     </div>
