@@ -87,6 +87,14 @@
         content: ' ↻';
         animation: loop 1s infinite;
       }
+      &--delete {
+        &:hover,
+        &:focus {
+          svg {
+            fill: #ed5e68;
+          }
+        }
+      }
     }
   }
 }

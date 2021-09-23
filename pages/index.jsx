@@ -61,6 +61,14 @@ export default function Home({ user }) {
     return DOMPurify.sanitize(html);
   }, [currentNote]);
 
+  const showScratchPad = useCallback(() => {
+    setCurrentNote(null);
+    const scratchpad = localStorage.getItem(constants.scratchpadRef);
+    if (!scratchpad) return;
+    try {
+      setCurrentNote(JSON.parse(scratchpad));
+    } catch (err) {}
+  }, []);
   const addNewNote = useCallback(
     () =>
       mutate(async (cachedNotes) => {
@@ -110,6 +118,7 @@ export default function Home({ user }) {
   );
   const deleteNote = useCallback(
     (note) => {
+      showScratchPad();
       const newNotes = notes.reduce(
         (acc, cachedNote) =>
           cachedNote.id !== note.id ? [...acc, cachedNote] : acc,
@@ -118,7 +127,7 @@ export default function Home({ user }) {
       mutate(newNotes, false);
       fetch(`/api/note/${note.id}`, { method: 'DELETE' }).then((res) => res.ok);
     },
-    [mutate, notes],
+    [mutate, notes, showScratchPad],
   );
 
   useHotkeys('ctrl+alt+n', () => addNewNote(), {
@@ -128,13 +137,8 @@ export default function Home({ user }) {
     enableOnTags: ['TEXTAREA'],
   });
 
-  useEffect(() => {
-    const scratchpad = localStorage.getItem(constants.scratchpadRef);
-    if (!scratchpad) return;
-    try {
-      setCurrentNote(JSON.parse(scratchpad));
-    } catch (err) {}
-  }, []);
+  // eslint-disable-next-line
+  useEffect(showScratchPad, []);
 
   if (isError) return <h1>You probably, should&apos;t see this, D_D</h1>;
 
@@ -196,6 +200,7 @@ export default function Home({ user }) {
               onToggleMarkdownPreview={() =>
                 setIsViewingMarkdown((bool) => !bool)
               }
+              onDeleteNote={() => deleteNote(currentNote)}
             ></BottomBar>
           </div>
         </div>
