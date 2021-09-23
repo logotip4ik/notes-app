@@ -13,6 +13,7 @@
     "@types/yup": "^0.29.13",
     "@uiw/react-textarea-code-editor": "1.4.4",
     "dompurify": "^2.3.3",
+    "framer-motion": "^4.1.17",
     "jsdom": "^17.0.0",
     "marked": "^3.0.4",
     "next": "11.1.2",
