@@ -200,6 +200,7 @@ export default function Home({ user }) {
               onToggleMarkdownPreview={() =>
                 setIsViewingMarkdown((bool) => !bool)
               }
+              onSelectScratchPad={() => showScratchPad()}
               onDeleteNote={() => deleteNote(currentNote)}
             ></BottomBar>
           </div>
