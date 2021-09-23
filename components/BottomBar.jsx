@@ -22,7 +22,7 @@ export default function BottomBar({
 
     initial = false;
 
-    return res;
+    return `${res} `;
   }, [isSyncing]);
 
   return (

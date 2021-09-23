@@ -81,11 +81,13 @@
       }
 
       &--in-sync::after {
-        content: ' ✓';
+        content: '✓';
       }
       &--syncing::after {
-        content: ' ↻';
-        animation: loop 1s infinite;
+        content: '↻';
+        display: inline-block;
+        transform-origin: 50% 60%;
+        animation: loop 1.5s infinite;
       }
       &--delete {
         &:hover,
