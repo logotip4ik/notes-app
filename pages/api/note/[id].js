@@ -64,7 +64,11 @@ async function updateUserNote(req, res, user) {
 
   const updatedNote = await prisma.note.update({
     where: { id },
-    data: { title: secureNote.title, content: secureNote.content },
+    data: {
+      title: secureNote.title,
+      content: secureNote.content,
+      updatedAt: new Date(),
+    },
   });
 
   res.status(200).json(updatedNote);
