@@ -73,6 +73,7 @@ export default function Home({ user }) {
     () =>
       mutate(async (cachedNotes) => {
         setIsSyncing(true);
+        setIsViewingMarkdown(false);
         const res = await fetch('/api/note', {
           method: 'POST',
           body: JSON.stringify({ title: '', content: '' }),
@@ -92,7 +93,6 @@ export default function Home({ user }) {
   // eslint-disable-next-line
   const updateNote = useCallback(
     functions.debounce((note) => {
-      setCurrentNote(note);
       if (!note.id)
         return localStorage.setItem(
           constants.scratchpadRef,
