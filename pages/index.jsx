@@ -37,17 +37,14 @@ export default function Home({ user }) {
   }, [isLoading, notes]);
   const filteredNotes = useMemo(() => {
     if (isLoading) return [];
-    if (currentTag.id === 'all-notes')
-      return notes.sort(
-        (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt),
-      );
+    if (currentTag.id === 'all-notes') return notes;
     const res = [];
 
     for (const note of notes)
       for (const tag of note.tags)
         if (tag.name === currentTag.name) return res.push(note);
 
-    return res.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+    return res;
   }, [notes, currentTag, isLoading]);
   const compiledMarkdown = useMemo(() => {
     if (!currentNote) return '';
@@ -103,16 +100,16 @@ export default function Home({ user }) {
         );
       setIsSyncing(true);
       mutate(async (cachedNotes) => {
-        await fetch(`/api/note/${note.id}`, {
+        fetch(`/api/note/${note.id}`, {
           method: 'POST',
           body: JSON.stringify(note),
-        });
+        }).then(() => setIsSyncing(false));
 
         const newNotes = cachedNotes.map((cachedNote) =>
-          cachedNote.id === note.id ? note : cachedNote,
+          cachedNote.id === note.id
+            ? { ...note, updatedAt: new Date() }
+            : cachedNote,
         );
-
-        setIsSyncing(false);
 
         return newNotes;
       }, false);
