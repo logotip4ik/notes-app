@@ -170,33 +170,35 @@ export default function Home({ user }) {
             onDeleteNote={(note) => deleteNote(note)}
           ></NotesSidebar>
           <div className={styles.main__editors}>
-            <div
-              style={{
-                display: isViewingMarkdown ? 'block' : 'none',
-              }}
-              className="marked-block"
-              dangerouslySetInnerHTML={{ __html: compiledMarkdown }}
-            ></div>
-            <CodeEditor
-              value={currentNote?.content || ''}
-              language="markdown"
-              onChange={({ target }) =>
-                updateNote({
-                  ...currentNote,
-                  title: target.value.split('\n')[0],
-                  content: target.value,
-                })
-              }
-              style={{
-                display: isViewingMarkdown ? 'none' : 'block',
-                fontSize: '16px',
-                fontFamily: 'Consolas,Liberation Mono,Menlo,monospace',
-              }}
-              minHeight={40}
-              placeholder="Enter your markdown"
-              padding={15}
-              data-editor
-            ></CodeEditor>
+            <div>
+              <div
+                style={{
+                  display: isViewingMarkdown ? 'block' : 'none',
+                }}
+                className="marked-block"
+                dangerouslySetInnerHTML={{ __html: compiledMarkdown }}
+              ></div>
+              <CodeEditor
+                value={currentNote?.content || ''}
+                language="markdown"
+                onChange={({ target }) =>
+                  updateNote({
+                    ...currentNote,
+                    title: target.value.split('\n')[0],
+                    content: target.value,
+                  })
+                }
+                style={{
+                  display: isViewingMarkdown ? 'none' : 'block',
+                  fontSize: '16px',
+                  fontFamily: 'Consolas,Liberation Mono,Menlo,monospace',
+                }}
+                minHeight={40}
+                placeholder="Enter your markdown"
+                padding={15}
+                data-editor
+              ></CodeEditor>
+            </div>
             <BottomBar
               isSyncing={isSyncing}
               user={user}
