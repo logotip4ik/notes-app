@@ -45,6 +45,9 @@ body {
   color: var(--ff-color) !important;
   font-weight: 400;
 }
+.w-tc-editor {
+  min-height: calc(100vh - var(--bottom-bar-height)) !important;
+}
 
 .code-block {
   color: #fafafa !important;
