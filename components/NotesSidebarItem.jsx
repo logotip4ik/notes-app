@@ -45,6 +45,7 @@ export default function NoteSidebarItem({
         className={styles.item__delete}
         onClick={(ev) => {
           ev.preventDefault();
+          ev.stopPropagation();
           onDelete(note);
         }}
       >
