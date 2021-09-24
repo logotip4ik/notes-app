@@ -37,14 +37,17 @@ export default function Home({ user }) {
   }, [isLoading, notes]);
   const filteredNotes = useMemo(() => {
     if (isLoading) return [];
-    if (currentTag.id === 'all-notes') return notes;
+    if (currentTag.id === 'all-notes')
+      return notes.sort(
+        (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt),
+      );
     const res = [];
 
     for (const note of notes)
       for (const tag of note.tags)
         if (tag.name === currentTag.name) return res.push(note);
 
-    return res;
+    return res.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
   }, [notes, currentTag, isLoading]);
   const compiledMarkdown = useMemo(() => {
     if (!currentNote) return '';
