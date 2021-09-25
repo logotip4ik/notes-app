@@ -1,0 +1,124 @@
+/* Based on https://github.com/dempfi/ayu */
+
+.cm-s-my-own-theme.CodeMirror {
+  background: var(--surface-color);
+  color: #cbccc6;
+  height: calc(100vh - var(--bottom-bar-height));
+  font-family: 'Operator Mono', 'Source Code Pro', Menlo, Monaco, Consolas,
+    'Courier New', monospace;
+  font-size: 16px;
+}
+.cm-s-my-own-theme div.CodeMirror-selected {
+  background: #34455a;
+}
+.cm-s-my-own-theme .CodeMirror-line::selection,
+.cm-s-my-own-theme .CodeMirror-line > span::selection,
+.cm-s-my-own-theme .CodeMirror-line > span > span::selection {
+  background: #34455a;
+}
+.cm-s-my-own-theme .CodeMirror-line::-moz-selection,
+.cm-s-my-own-theme .CodeMirror-line > span::-moz-selection,
+.cm-s-my-own-theme .CodeMirror-line > span > span::-moz-selection {
+  background: rgba(25, 30, 42, 99);
+}
+.cm-s-my-own-theme .CodeMirror-gutters {
+  background: var(--secondary-color);
+  border-right: 0px;
+}
+.cm-s-my-own-theme .CodeMirror-guttermarker {
+  color: white;
+}
+.cm-s-my-own-theme .CodeMirror-guttermarker-subtle {
+  color: rgba(112, 122, 140, 0.25);
+}
+.cm-s-my-own-theme .CodeMirror-linenumber {
+  color: hsla(65, 50%, 95%, 0.25);
+}
+.cm-s-my-own-theme .CodeMirror-cursor {
+  border-left: 1px solid var(--primary-color);
+}
+.cm-s-my-own-theme.cm-fat-cursor .CodeMirror-cursor {
+  background-color: #a2a8a175 !important;
+}
+.cm-s-my-own-theme .cm-animate-fat-cursor {
+  background-color: #a2a8a175 !important;
+}
+
+.cm-s-my-own-theme span.cm-comment {
+  color: #5c6773;
+  font-style: italic;
+}
+.cm-s-my-own-theme span.cm-atom {
+  color: #ae81ff;
+}
+.cm-s-my-own-theme span.cm-number {
+  color: #ffcc66;
+}
+
+.cm-s-my-own-theme span.cm-comment.cm-attribute {
+  color: #ffd580;
+}
+.cm-s-my-own-theme span.cm-comment.cm-def {
+  color: #d4bfff;
+}
+.cm-s-my-own-theme span.cm-comment.cm-tag {
+  color: #5ccfe6;
+}
+.cm-s-my-own-theme span.cm-comment.cm-type {
+  color: #5998a6;
+}
+
+.cm-s-my-own-theme span.cm-property {
+  color: #f29e74;
+}
+.cm-s-my-own-theme span.cm-attribute {
+  color: #ffd580;
+}
+.cm-s-my-own-theme span.cm-keyword {
+  color: #ffa759;
+}
+.cm-s-my-own-theme span.cm-builtin {
+  color: var(--primary-color);
+}
+.cm-s-my-own-theme span.cm-string {
+  color: #bae67e;
+}
+
+.cm-s-my-own-theme span.cm-variable {
+  color: #cbccc6;
+}
+.cm-s-my-own-theme span.cm-variable-2 {
+  color: #f28779;
+}
+.cm-s-my-own-theme span.cm-variable-3 {
+  color: #5ccfe6;
+}
+.cm-s-my-own-theme span.cm-type {
+  color: #ffa759;
+}
+.cm-s-my-own-theme span.cm-def {
+  color: #ffd580;
+}
+.cm-s-my-own-theme span.cm-bracket {
+  color: rgba(92, 207, 230, 80);
+}
+.cm-s-my-own-theme span.cm-tag {
+  color: #5ccfe6;
+}
+.cm-s-my-own-theme span.cm-header {
+  color: var(--primary-color);
+}
+.cm-s-my-own-theme span.cm-link {
+  color: #5ccfe6;
+}
+.cm-s-my-own-theme span.cm-error {
+  color: #ff3333;
+}
+
+.cm-s-my-own-theme .CodeMirror-activeline-background {
+  background: #191e2a;
+}
+.cm-s-my-own-theme .CodeMirror-matchingbracket {
+  text-decoration: underline;
+  color: white !important;
+}
