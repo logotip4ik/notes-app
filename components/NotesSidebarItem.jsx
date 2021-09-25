@@ -32,7 +32,9 @@ export default function NoteSidebarItem({
       {...animations}
       onClick={() => onSelect(note)}
       className={`${styles.item} ${
-        note.id === currentNote.id ? styles['item--selected'] : ''
+        currentNote && note.id === currentNote.id
+          ? styles['item--selected']
+          : ''
       }`}
     >
       <h2 className={styles.item__heading}>{note.title || 'New Note'}</h2>
