@@ -69,27 +69,54 @@ export default function Home({ user }) {
       setCurrentNote(JSON.parse(scratchpad));
     } catch (err) {}
   }, []);
-  const addNewNote = useCallback(
-    () =>
-      mutate(async (cachedNotes) => {
-        setIsSyncing(true);
-        setIsViewingMarkdown(false);
-        const res = await fetch('/api/note', {
-          method: 'POST',
-          body: JSON.stringify({ title: '', content: '' }),
-        });
-        const note = await res.json();
-        setCurrentTag(constants.initialTags[0]);
-        setCurrentNote(note);
 
-        const editor = document.querySelector('[data-editor]');
-        if (editor) editor.focus();
+  const handleServerResponse = useCallback(
+    (noteFromServer) => {
+      setIsSyncing(false);
 
-        setIsSyncing(false);
-        return [...cachedNotes, note];
-      }, false),
-    [mutate],
+      console.log({ notes, noteFromServer });
+    },
+    [notes],
   );
+
+  const addNewNote = useCallback(() => {
+    setIsSyncing(true);
+    setIsViewingMarkdown(false);
+
+    // Boilerplate note, just for faster creation, no need for waiting for the server response
+    const newNote = {
+      id: (Math.random() * 1000) << 0,
+      title: '',
+      content: '',
+      tags: [],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      shouldReAddSelf: true,
+    };
+
+    setCurrentTag(constants.initialTags[0]);
+    setCurrentNote(newNote);
+    mutate((cachedNotes) => [...cachedNotes, newNote], false);
+
+    fetch('/api/note', {
+      method: 'POST',
+      body: JSON.stringify({ title: '', content: '' }),
+    })
+      .then((res) => res.json())
+      .then((noteFromServer) =>
+        mutate((cachedNotes) => {
+          setIsSyncing(false);
+          setCurrentNote(noteFromServer);
+          return cachedNotes.map((note) =>
+            note.shouldReAddSelf ? noteFromServer : note,
+          );
+        }, true),
+      );
+
+    const editor = document.querySelector('[data-editor]');
+    if (editor) editor.focus();
+  }, [mutate]);
+
   // eslint-disable-next-line
   const updateNote = useCallback(
     functions.debounce((note) => {
