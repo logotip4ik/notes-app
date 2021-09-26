@@ -24,6 +24,7 @@ export default function Home({ user }) {
 
   const [currentTag, setCurrentTag] = useState(constants.initialTags[0]);
   const [currentNote, setCurrentNote] = useState(null);
+  const [markdown, setMarkdown] = useState('');
   const [isViewingMarkdown, setIsViewingMarkdown] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const tags = useMemo(() => {
@@ -47,8 +48,8 @@ export default function Home({ user }) {
 
     return res;
   }, [notes, currentTag, isLoading]);
-  const compiledMarkdown = useMemo(() => {
-    if (!currentNote) return '';
+
+  const compileMarkdown = useCallback((markdown) => {
     DOMPurify.addHook('afterSanitizeAttributes', (node) => {
       if (node.tagName !== 'A') return;
 
@@ -56,11 +57,12 @@ export default function Home({ user }) {
       node.setAttribute('rel', 'noopener noreferrer');
     });
 
-    const html = marked(currentNote.content, {
+    const html = marked(markdown, {
       gfm: true,
     });
-    return DOMPurify.sanitize(html);
-  }, [currentNote]);
+
+    setMarkdown(DOMPurify.sanitize(html));
+  }, []);
 
   const showScratchPad = useCallback(() => {
     setCurrentNote(null);
@@ -111,6 +113,8 @@ export default function Home({ user }) {
   // eslint-disable-next-line
   const updateNote = useCallback(
     (note) => {
+      compileMarkdown(note.content);
+
       if (!note.id)
         return localStorage.setItem(
           constants.scratchpadRef,
@@ -133,7 +137,7 @@ export default function Home({ user }) {
         return newNotes;
       }, false);
     },
-    [mutate],
+    [mutate, compileMarkdown],
   );
   const deleteNote = useCallback(
     (note) => {
@@ -158,6 +162,10 @@ export default function Home({ user }) {
 
   // eslint-disable-next-line
   useEffect(showScratchPad, []);
+  useEffect(
+    () => (currentNote ? compileMarkdown(currentNote.content) : null),
+    [currentNote, compileMarkdown],
+  );
 
   if (isError) return <h1>You probably, should&apos;t see this, D_D</h1>;
 
@@ -184,7 +192,7 @@ export default function Home({ user }) {
             currentNote={currentNote}
             onSelectNote={(note) => {
               setCurrentNote(note);
-              CodeMirrorInstance.focus();
+              CodeMirrorInstance.current.focus();
             }}
             onDeleteNote={(note) => deleteNote(note)}
           ></NotesSidebar>
@@ -195,7 +203,7 @@ export default function Home({ user }) {
                   display: isViewingMarkdown ? 'block' : 'none',
                 }}
                 className="marked-block"
-                dangerouslySetInnerHTML={{ __html: compiledMarkdown }}
+                dangerouslySetInnerHTML={{ __html: markdown }}
               ></div>
               <CodeEditor
                 value={currentNote?.content || ''}
