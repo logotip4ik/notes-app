@@ -1,4 +1,5 @@
-import '@uiw/react-textarea-code-editor/dist.css';
+import 'codemirror/lib/codemirror.css';
+import 'codemirror/addon/scroll/simplescrollbars.css';
 import styles from '../styles/Home.module.css';
 import Head from 'next/head';
 import dynamic from 'next/dynamic';
@@ -13,10 +14,10 @@ import BottomBar from '../components/BottomBar';
 import TagsSidebar from '../components/TagsSidebar';
 import NotesSidebar from '../components/NotesSidebar';
 
-const CodeEditor = dynamic(
-  () => import('@uiw/react-textarea-code-editor').then((mod) => mod.default),
-  { ssr: false },
-);
+const CodeEditor = dynamic(() => import('../components/CodeEditor'), {
+  ssr: false,
+});
+const CodeMirrorInstance = { current: {} };
 
 export default function Home({ user }) {
   const { notes, isLoading, isError, mutate } = useNotes();
@@ -70,15 +71,6 @@ export default function Home({ user }) {
     } catch (err) {}
   }, []);
 
-  const handleServerResponse = useCallback(
-    (noteFromServer) => {
-      setIsSyncing(false);
-
-      console.log({ notes, noteFromServer });
-    },
-    [notes],
-  );
-
   const addNewNote = useCallback(() => {
     setIsSyncing(true);
     setIsViewingMarkdown(false);
@@ -113,18 +105,18 @@ export default function Home({ user }) {
         }, true),
       );
 
-    const editor = document.querySelector('[data-editor]');
-    if (editor) editor.focus();
+    CodeMirrorInstance.current.focus();
   }, [mutate]);
 
   // eslint-disable-next-line
   const updateNote = useCallback(
-    functions.debounce((note) => {
+    (note) => {
       if (!note.id)
         return localStorage.setItem(
           constants.scratchpadRef,
           JSON.stringify(note),
         );
+
       setIsSyncing(true);
       mutate(async (cachedNotes) => {
         fetch(`/api/note/${note.id}`, {
@@ -140,7 +132,7 @@ export default function Home({ user }) {
 
         return newNotes;
       }, false);
-    }),
+    },
     [mutate],
   );
   const deleteNote = useCallback(
@@ -190,7 +182,10 @@ export default function Home({ user }) {
           <NotesSidebar
             notes={filteredNotes}
             currentNote={currentNote}
-            onSelectNote={(note) => setCurrentNote(note)}
+            onSelectNote={(note) => {
+              setCurrentNote(note);
+              CodeMirrorInstance.focus();
+            }}
             onDeleteNote={(note) => deleteNote(note)}
           ></NotesSidebar>
           <div className={styles.main__editors}>
@@ -204,23 +199,17 @@ export default function Home({ user }) {
               ></div>
               <CodeEditor
                 value={currentNote?.content || ''}
-                language="markdown"
-                onChange={({ target }) =>
+                onChange={(code) =>
                   updateNote({
                     ...currentNote,
-                    title: target.value.split('\n')[0],
-                    content: target.value,
+                    title: code.split('\n')[0],
+                    content: code,
                   })
                 }
                 style={{
                   display: isViewingMarkdown ? 'none' : 'block',
-                  fontSize: '16px',
-                  fontFamily: 'Consolas,Liberation Mono,Menlo,monospace',
                 }}
-                minHeight={40}
-                placeholder="Enter your markdown"
-                padding={15}
-                data-editor
+                CodeMirrorInstance={CodeMirrorInstance}
               ></CodeEditor>
             </div>
             <BottomBar
