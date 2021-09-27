@@ -21,7 +21,12 @@ const editorOptions = {
   theme: 'my-own-theme',
 };
 
-export default function CodeEditor({ value, onChange, CodeMirrorInstance }) {
+export default function CodeEditor({
+  value,
+  onChange,
+  isVisible,
+  CodeMirrorInstance,
+}) {
   const editorRef = useRef();
 
   const emitChange = useMemo(
@@ -29,20 +34,22 @@ export default function CodeEditor({ value, onChange, CodeMirrorInstance }) {
     [onChange],
   );
 
+  useEffect(
+    () => (CodeMirrorInstance.current = editorRef.current.getCodeMirror()),
+    [CodeMirrorInstance, editorRef],
+  );
   useEffect(() => {
-    const editor = editorRef.current.getCodeMirror();
-    CodeMirrorInstance.current = editor;
-  }, [CodeMirrorInstance, editorRef]);
-  useEffect(() => {
-    editorRef.current.getCodeMirror().setValue(value);
-  }, [value]);
+    setTimeout(editorRef.current.getCodeMirror().setValue(value), 0);
+  }, [value, isVisible]);
 
   return (
-    <CodeMirror
-      ref={editorRef}
-      value={value}
-      onChange={(code) => emitChange(code)}
-      options={editorOptions}
-    ></CodeMirror>
+    <div style={{ display: isVisible ? 'block' : 'none' }}>
+      <CodeMirror
+        ref={editorRef}
+        value={value}
+        onChange={(code) => emitChange(code)}
+        options={editorOptions}
+      ></CodeMirror>
+    </div>
   );
 }
