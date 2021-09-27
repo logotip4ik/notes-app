@@ -9,7 +9,7 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import marked from 'marked';
 import DOMPurify from 'dompurify';
 import useNotes from '../hooks/useNotes';
-import { constants, functions } from '../helpers';
+import { constants } from '../helpers';
 import BottomBar from '../components/BottomBar';
 import TagsSidebar from '../components/TagsSidebar';
 import NotesSidebar from '../components/NotesSidebar';
