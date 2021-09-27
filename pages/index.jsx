@@ -214,9 +214,7 @@ export default function Home({ user }) {
                     content: code,
                   })
                 }
-                style={{
-                  display: isViewingMarkdown ? 'none' : 'block',
-                }}
+                isVisible={!isViewingMarkdown}
                 CodeMirrorInstance={CodeMirrorInstance}
               ></CodeEditor>
             </div>
