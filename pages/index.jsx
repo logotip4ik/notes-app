@@ -1,3 +1,4 @@
+import 'prismjs/themes/prism-okaidia.css';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/addon/scroll/simplescrollbars.css';
 import styles from '../styles/Home.module.css';
@@ -8,6 +9,13 @@ import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import marked from 'marked';
 import DOMPurify from 'dompurify';
+import prism from 'prismjs';
+import 'prismjs/components/prism-markup-templating';
+import 'prismjs/components/prism-css';
+import 'prismjs/components/prism-json';
+import 'prismjs/components/prism-javascript';
+import 'prismjs/components/prism-jsx';
+import 'prismjs/components/prism-bash';
 import useNotes from '../hooks/useNotes';
 import { constants } from '../helpers';
 import BottomBar from '../components/BottomBar';
@@ -59,6 +67,13 @@ export default function Home({ user }) {
 
     const html = marked(markdown, {
       gfm: true,
+      highlight: (code, lang) => {
+        if (prism.languages[lang]) {
+          console.log(prism.highlight(code, prism.languages[lang], lang));
+          return prism.highlight(code, prism.languages[lang], lang);
+        }
+        return code;
+      },
     });
 
     setMarkdown(DOMPurify.sanitize(html));
