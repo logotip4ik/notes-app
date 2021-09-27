@@ -4,7 +4,7 @@ import styles from '../styles/Home.module.css';
 import Head from 'next/head';
 import dynamic from 'next/dynamic';
 import { getSession } from 'next-auth/react';
-import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import marked from 'marked';
 import DOMPurify from 'dompurify';
@@ -17,11 +17,11 @@ import NotesSidebar from '../components/NotesSidebar';
 const CodeEditor = dynamic(() => import('../components/CodeEditor'), {
   ssr: false,
 });
-const CodeMirrorInstance = { current: {} };
 
 export default function Home({ user }) {
   const { notes, isLoading, isError, mutate } = useNotes();
 
+  const CodeMirrorInstance = useRef();
   const [currentTag, setCurrentTag] = useState(constants.initialTags[0]);
   const [currentNote, setCurrentNote] = useState(null);
   const [markdown, setMarkdown] = useState('');
