@@ -47,3 +47,13 @@
   border-radius: 0.25rem;
   background-clip: content-box;
 }
+
+@media screen and (max-width: 770px) {
+  .main {
+    flex-direction: column;
+  }
+  .main > * {
+    flex-basis: 100% !important;
+    max-width: none !important;
+  }
+}
