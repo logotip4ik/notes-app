@@ -8,20 +8,12 @@ const sorter = (aNote, bNote) =>
 
 export default function NotesSidebar({
   notes,
+  search,
   currentNote,
   onSelectNote,
   onDeleteNote,
+  onSearchChange,
 }) {
-  const formatDate = useCallback(
-    (date) =>
-      Intl.DateTimeFormat('ua', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-      }).format(new Date(date)),
-    [],
-  );
-
   return (
     <div className={styles.main}>
       <div className={styles.main__wrapper}>
@@ -29,6 +21,8 @@ export default function NotesSidebar({
           type="text"
           placeholder="Search with note title"
           className={styles.main__wrapper__input}
+          value={search}
+          onChange={({ target }) => onSearchChange(target.value)}
         />
       </div>
       <AnimateSharedLayout>
