@@ -26,6 +26,21 @@ const CodeEditor = dynamic(() => import('../components/CodeEditor'), {
   ssr: false,
 });
 
+const filters = {
+  all: ({ notes }) => notes,
+  search: ({ notes, searchQuery }) =>
+    notes.filter((note) => note.title.includes(searchQuery)),
+  tag: ({ notes, tag }) => {
+    const res = [];
+
+    for (const note of notes)
+      for (const tag of note.tags)
+        if (tag.name === currentTag.name) return res.push(note);
+
+    return res;
+  },
+};
+
 export default function Home({ user }) {
   const { notes, isLoading, isError, mutate } = useNotes();
 
@@ -33,6 +48,7 @@ export default function Home({ user }) {
   const [currentTag, setCurrentTag] = useState(constants.initialTags[0]);
   const [currentNote, setCurrentNote] = useState(null);
   const [markdown, setMarkdown] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   const [isViewingMarkdown, setIsViewingMarkdown] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const tags = useMemo(() => {
@@ -45,17 +61,6 @@ export default function Home({ user }) {
 
     return Array.from(res);
   }, [isLoading, notes]);
-  const filteredNotes = useMemo(() => {
-    if (isLoading) return [];
-    if (currentTag.id === 'all-notes') return notes;
-    const res = [];
-
-    for (const note of notes)
-      for (const tag of note.tags)
-        if (tag.name === currentTag.name) return res.push(note);
-
-    return res;
-  }, [notes, currentTag, isLoading]);
 
   const compileMarkdown = useCallback((markdown) => {
     DOMPurify.addHook('afterSanitizeAttributes', (node) => {
@@ -68,10 +73,8 @@ export default function Home({ user }) {
     const html = marked(markdown, {
       gfm: true,
       highlight: (code, lang) => {
-        if (prism.languages[lang]) {
-          console.log(prism.highlight(code, prism.languages[lang], lang));
+        if (prism.languages[lang])
           return prism.highlight(code, prism.languages[lang], lang);
-        }
         return code;
       },
     });
@@ -198,18 +201,27 @@ export default function Home({ user }) {
             currentTag={currentTag}
             onSelectTag={(tag) => {
               setCurrentTag(tag);
+              setSearchQuery('');
               setCurrentNote(null);
             }}
             onCreateNote={() => addNewNote()}
           ></TagsSidebar>
           <NotesSidebar
-            notes={filteredNotes}
+            notes={filters[
+              searchQuery
+                ? 'search'
+                : currentTag && currentTag.id !== 'all-notes'
+                ? 'tag'
+                : 'all'
+            ]({ notes, searchQuery, tag: currentTag })}
+            search={searchQuery}
             currentNote={currentNote}
             onSelectNote={(note) => {
               setCurrentNote(note);
               CodeMirrorInstance.current.focus();
             }}
             onDeleteNote={(note) => deleteNote(note)}
+            onSearchChange={(noteTitle) => setSearchQuery(noteTitle)}
           ></NotesSidebar>
           <div className={styles.main__editors}>
             <div>
