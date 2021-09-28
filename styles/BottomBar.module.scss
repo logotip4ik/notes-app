@@ -89,11 +89,21 @@
         transform-origin: 50% 60%;
         animation: loop 1.5s infinite;
       }
+      &--star {
+        &:hover,
+        &:focus {
+          svg {
+            fill: hsl(55, 100%, 50%);
+            transition: none;
+          }
+        }
+      }
       &--delete {
         &:hover,
         &:focus {
           svg {
             fill: #ed5e68;
+            transition: none;
           }
         }
       }
