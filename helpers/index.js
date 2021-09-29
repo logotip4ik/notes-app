@@ -1,7 +1,7 @@
 const constants = {
   initialTags: [
-    { id: 'all-notes', name: 'All Notes' },
-    { id: 'favorites', name: 'Favorites' },
+    { id: 'all-notes', name: 'all-notes' },
+    { id: 'favorites', name: 'favorites' },
   ],
   scratchpadRef: '__next-notes-SCRATCHPAD',
 };
