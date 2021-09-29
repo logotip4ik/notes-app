@@ -157,6 +157,27 @@ export default function Home({ user }) {
     },
     [mutate, compileMarkdown],
   );
+  const updateTagsOnNote = useCallback(
+    (note, tagName) => {
+      const normalizedUrlTagName = tagName.toLowerCase().replace(/ /g, '-');
+      setCurrentNote({
+        ...note,
+        tags: [...note.tags, { id: (Math.random() * 1000) << 0 }],
+      });
+
+      mutate(async (cachedNotes) => {
+        const res = await fetch(
+          `/api/note/${note.id}/${normalizedUrlTagName}`,
+          { method: 'POST' },
+        );
+        const updatedNote = await res.json();
+        return cachedNotes.map((cachedNote) =>
+          cachedNote.id === note.id ? updatedNote : cachedNote,
+        );
+      }, false);
+    },
+    [mutate],
+  );
   const deleteNote = useCallback(
     (note) => {
       showScratchPad();
@@ -248,6 +269,11 @@ export default function Home({ user }) {
             <BottomBar
               isSyncing={isSyncing}
               user={user}
+              onAddToFav={() =>
+                currentNote.id
+                  ? updateTagsOnNote(currentNote, 'Favorite')
+                  : 'none'
+              }
               onToggleMarkdownPreview={() =>
                 setIsViewingMarkdown((bool) => !bool)
               }
