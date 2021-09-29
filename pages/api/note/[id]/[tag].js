@@ -1,20 +1,7 @@
 import { getSession } from 'next-auth/react';
 import { PrismaClient } from '@prisma/client';
-import createDomPurify from 'dompurify';
-import { JSDOM } from 'jsdom';
-import * as yup from 'yup';
 
 const prisma = new PrismaClient();
-const window = new JSDOM('').window;
-const dompurify = createDomPurify(window);
-const updateSchema = yup.object().shape({
-  id: yup.number().required(),
-  title: yup.string().max(200).defined(),
-  content: yup.string().defined(),
-  tags: yup.array().optional(),
-  createdAt: yup.string().required(),
-  updatedAt: yup.string().default(new Date().toISOString()).required(),
-});
 
 /**
  * @param {import("next").NextApiRequest} req
@@ -23,6 +10,7 @@ const updateSchema = yup.object().shape({
 async function addOrUpdateTagOnNote(req, res, user) {
   if (isNaN(req.query.id)) return res.status(400).json({ msg: 'Not valid id' });
   const id = parseInt(req.query.id);
+  const tagName = req.query.tag.slice(0, 50);
 
   const noteFromDb = await prisma.note.findUnique({
     where: { id },
@@ -36,12 +24,39 @@ async function addOrUpdateTagOnNote(req, res, user) {
     data: {
       tags: {
         connectOrCreate: {
-          create: { name: req.query.tag },
-          where: { name: req.query.tag },
+          create: { name: tagName },
+          where: { name: tagName },
         },
       },
     },
   });
+
+  return res.status(200).json(updatedNote);
+}
+
+async function deleteTagOnNote(req, res, user) {
+  if (isNaN(req.query.id)) return res.status(400).json({ msg: 'Not valid id' });
+  const id = parseInt(req.query.id);
+  const tagName = req.query.tag.slice(0, 50);
+
+  const noteFromDb = await prisma.note.findUnique({
+    where: { id },
+    include: { User: true },
+  });
+  if (noteFromDb.User.email !== user.email) return res.status(400).end();
+
+  const updatedNote = await prisma.note
+    .update({
+      where: { id },
+      include: { tags: true },
+      data: {
+        tags: { disconnect: { name: tagName } },
+      },
+    })
+    .catch((err) => {
+      res.status(500).end();
+      throw new Error(err.message);
+    });
 
   return res.status(200).json(updatedNote);
 }
