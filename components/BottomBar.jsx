@@ -26,7 +26,6 @@ export default function BottomBar({
   const [isFavorite, setIsFavorite] = useState(false);
   useEffect(() => {
     if (!currentNote || !currentNote.tags) return;
-    console.log(currentNote);
     setIsFavorite(
       currentNote.tags.some((tag) => tag.name === constants.initialTags[1].id),
     );
