@@ -158,17 +158,32 @@ export default function Home({ user }) {
     [mutate, compileMarkdown],
   );
   const updateTagsOnNote = useCallback(
-    (note, tagName) => {
+    (note, tagName, deleteTag = false) => {
       const normalizedUrlTagName = tagName.toLowerCase().replace(/ /g, '-');
-      setCurrentNote({
-        ...note,
-        tags: [...note.tags, { id: (Math.random() * 1000) << 0 }],
-      });
+
+      if (!deleteTag)
+        setCurrentNote({
+          ...note,
+          tags: [
+            ...note.tags,
+            {
+              id: (Math.random() * 1000) << 0,
+              name: constants.initialTags[1].id,
+            },
+          ],
+        });
+      else
+        setCurrentNote({
+          ...note,
+          tags: note.tags.filter(
+            (tag) => tag.name !== constants.initialTags[1].id,
+          ),
+        });
 
       mutate(async (cachedNotes) => {
         const res = await fetch(
           `/api/note/${note.id}/${normalizedUrlTagName}`,
-          { method: 'POST' },
+          { method: deleteTag ? 'DELETE' : 'POST' },
         );
         const updatedNote = await res.json();
         return cachedNotes.map((cachedNote) =>
@@ -268,10 +283,20 @@ export default function Home({ user }) {
             </div>
             <BottomBar
               isSyncing={isSyncing}
+              currentNote={currentNote}
               user={user}
+              onRemoveFromFav={() =>
+                currentNote.id
+                  ? updateTagsOnNote(
+                      currentNote,
+                      constants.initialTags[1].id,
+                      true,
+                    )
+                  : 'none'
+              }
               onAddToFav={() =>
                 currentNote.id
-                  ? updateTagsOnNote(currentNote, 'Favorite')
+                  ? updateTagsOnNote(currentNote, constants.initialTags[1].id)
                   : 'none'
               }
               onToggleMarkdownPreview={() =>
