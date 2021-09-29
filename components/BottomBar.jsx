@@ -15,6 +15,7 @@ const exit = { opacity: 0 };
 export default function BottomBar({
   user,
   isSyncing,
+  onAddToFav,
   onDeleteNote,
   onSelectScratchPad,
   onToggleMarkdownPreview,
@@ -50,7 +51,7 @@ export default function BottomBar({
         </li>
         <li
           className={`${styles.main__list__item} ${styles['main__list__item--svg']} ${styles['main__list__item--star']}`}
-          // onClick={onSelectScratchPad}
+          onClick={onAddToFav}
           title="Add to favorites"
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
