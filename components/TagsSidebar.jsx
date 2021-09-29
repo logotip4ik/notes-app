@@ -1,4 +1,12 @@
 import styles from '../styles/TagsSidebar.module.scss';
+
+const toTitleCase = (str) =>
+  str
+    .split('')
+    .map((char, i) => (i === 0 ? char.toUpperCase() : char))
+    .join('')
+    .replace(/-/g, ' ');
+
 export default function TagsSidebar({
   tags,
   currentTag,
@@ -25,7 +33,7 @@ export default function TagsSidebar({
             key={tag.id}
             onClick={() => onSelectTag(tag)}
           >
-            {tag.name}
+            {toTitleCase(tag.name)}
           </li>
         ))}
       </ul>
