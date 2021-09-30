@@ -34,8 +34,8 @@ const filters = {
     const res = [];
 
     for (const note of notes)
-      for (const tag of note.tags)
-        if (tag.name === currentTag.name) return res.push(note);
+      for (const noteTag of note.tags)
+        if (noteTag.name === tag.name) res.push(note);
 
     return res;
   },
@@ -56,7 +56,12 @@ export default function Home({ user }) {
     const res = new Set(constants.initialTags);
 
     for (const note of notes) {
-      if (note.tags.length !== 0) res.add(...note.tags);
+      const normalizedTags = note.tags.map((tag) =>
+        tag.name === constants.initialTags[1].id
+          ? constants.initialTags[1]
+          : tag,
+      );
+      if (note.tags.length !== 0) res.add(...normalizedTags);
     }
 
     return Array.from(res);
@@ -244,10 +249,10 @@ export default function Home({ user }) {
           ></TagsSidebar>
           <NotesSidebar
             notes={filters[
-              searchQuery
-                ? 'search'
-                : currentTag && currentTag.id !== 'all-notes'
+              currentTag && currentTag.id !== 'all-notes'
                 ? 'tag'
+                : searchQuery
+                ? 'search'
                 : 'all'
             ]({ notes, searchQuery, tag: currentTag })}
             search={searchQuery}
