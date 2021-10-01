@@ -1,5 +1,6 @@
 import { getSession } from 'next-auth/react';
 import { PrismaClient } from '@prisma/client';
+import slugify from 'slugify';
 
 const prisma = new PrismaClient();
 
@@ -10,7 +11,7 @@ const prisma = new PrismaClient();
 async function addOrUpdateTagOnNote(req, res, user) {
   if (isNaN(req.query.id)) return res.status(400).json({ msg: 'Not valid id' });
   const id = parseInt(req.query.id);
-  const tagName = req.query.tag.slice(0, 50);
+  const tagName = slugify(req.query.tag.slice(0, 50));
 
   const noteFromDb = await prisma.note.findUnique({
     where: { id },
