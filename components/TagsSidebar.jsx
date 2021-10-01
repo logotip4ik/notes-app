@@ -1,4 +1,5 @@
 import styles from '../styles/TagsSidebar.module.scss';
+import Plus from '../assets/plus.svg';
 
 const toTitleCase = (str) =>
   str
@@ -16,9 +17,7 @@ export default function TagsSidebar({
   return (
     <div className={styles.sidebar}>
       <button className={styles.sidebar__createButton} onClick={onCreateNote}>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-          <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
-        </svg>
+        <Plus></Plus>
         Note
       </button>
       <h1 className={styles.sidebar__heading}>Tags:</h1>
