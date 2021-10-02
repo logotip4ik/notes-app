@@ -38,9 +38,10 @@ export default function CodeEditor({
     () => (CodeMirrorInstance.current = editorRef.current.getCodeMirror()),
     [CodeMirrorInstance, editorRef],
   );
-  useEffect(() => {
-    setTimeout(editorRef.current.getCodeMirror().setValue(value), 0);
-  }, [value]);
+  useEffect(
+    () => setTimeout(editorRef.current.getCodeMirror().setValue(value), 0),
+    [value],
+  );
 
   return (
     <div style={{ display: isVisible ? 'block' : 'none' }}>
