@@ -40,7 +40,7 @@ export default function CodeEditor({
   );
   useEffect(() => {
     setTimeout(editorRef.current.getCodeMirror().setValue(value), 0);
-  }, [value, isVisible]);
+  }, [value]);
 
   return (
     <div style={{ display: isVisible ? 'block' : 'none' }}>
