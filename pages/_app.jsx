@@ -1,5 +1,5 @@
 import '../styles/globals.css';
-import '../styles/codemirror-my-own-theme.css';
+import '@uiw/react-textarea-code-editor/dist.css';
 import { SessionProvider } from 'next-auth/react';
 
 function MyApp({ Component, pageProps }) {
