@@ -40,7 +40,9 @@ const filters = {
     return res;
   },
 };
-
+// FIXME: refactor the tags api
+// COMMENT: create a separate api route for tags, cuz you need to be able to create them not only update or link
+// COMMENT: then probably fetch them the same as notes D_D
 export default function Home({ user }) {
   const { notes, isLoading, isError, mutate } = useNotes();
 
@@ -87,14 +89,23 @@ export default function Home({ user }) {
     setMarkdown(DOMPurify.sanitize(html));
   }, []);
 
+  const selectNote = useCallback(
+    (note) => {
+      setCurrentNote(note);
+      CodeMirrorInstance.current.setValue(note.content);
+      CodeMirrorInstance.current.focus();
+    },
+    [CodeMirrorInstance],
+  );
+
   const showScratchPad = useCallback(() => {
     setCurrentNote(null);
     const scratchpad = localStorage.getItem(constants.scratchpadRef);
     if (!scratchpad) return;
     try {
-      setCurrentNote(JSON.parse(scratchpad));
+      selectNote(JSON.parse(scratchpad));
     } catch (err) {}
-  }, []);
+  }, [selectNote]);
 
   const addNewNote = useCallback(() => {
     setIsSyncing(true);
@@ -137,6 +148,7 @@ export default function Home({ user }) {
   const updateNote = useCallback(
     (note) => {
       compileMarkdown(note.content);
+      setCurrentNote(note);
 
       if (!note.id)
         return localStorage.setItem(
@@ -225,6 +237,10 @@ export default function Home({ user }) {
     () => (currentNote ? compileMarkdown(currentNote.content) : null),
     [currentNote, compileMarkdown],
   );
+  useEffect(
+    () => CodeMirrorInstance.current?.setValue(currentNote.content),
+    [isViewingMarkdown, currentNote],
+  );
 
   if (isError) return <h1>You probably, should&apos;t see this, D_D</h1>;
 
@@ -257,10 +273,7 @@ export default function Home({ user }) {
             ]({ notes, searchQuery, tag: currentTag })}
             search={searchQuery}
             currentNote={currentNote}
-            onSelectNote={(note) => {
-              setCurrentNote(note);
-              CodeMirrorInstance.current.focus();
-            }}
+            onSelectNote={(note) => selectNote(note)}
             onDeleteNote={(note) => deleteNote(note)}
             onSearchChange={(noteTitle) => setSearchQuery(noteTitle)}
           ></NotesSidebar>
