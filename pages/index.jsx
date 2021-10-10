@@ -1,6 +1,4 @@
 import 'prismjs/themes/prism-okaidia.css';
-import 'codemirror/lib/codemirror.css';
-import 'codemirror/addon/scroll/simplescrollbars.css';
 import styles from '../styles/Home.module.css';
 import Head from 'next/head';
 import dynamic from 'next/dynamic';
@@ -46,7 +44,6 @@ const filters = {
 export default function Home({ user }) {
   const { notes, isLoading, isError, mutate } = useNotes();
 
-  const CodeMirrorInstance = useRef();
   const [currentTag, setCurrentTag] = useState(constants.initialTags[0]);
   const [currentNote, setCurrentNote] = useState(null);
   const [markdown, setMarkdown] = useState('');
@@ -89,23 +86,14 @@ export default function Home({ user }) {
     setMarkdown(DOMPurify.sanitize(html));
   }, []);
 
-  const selectNote = useCallback(
-    (note) => {
-      setCurrentNote(note);
-      CodeMirrorInstance.current.setValue(note.content);
-      CodeMirrorInstance.current.focus();
-    },
-    [CodeMirrorInstance],
-  );
-
   const showScratchPad = useCallback(() => {
     setCurrentNote(null);
     const scratchpad = localStorage.getItem(constants.scratchpadRef);
     if (!scratchpad) return;
     try {
-      selectNote(JSON.parse(scratchpad));
+      setCurrentNote(JSON.parse(scratchpad));
     } catch (err) {}
-  }, [selectNote]);
+  }, []);
 
   const addNewNote = useCallback(() => {
     setIsSyncing(true);
@@ -113,7 +101,7 @@ export default function Home({ user }) {
 
     // Boilerplate note, just for faster creation, no need for waiting for the server response
     const newNote = {
-      id: (Math.random() * 1000) << 0,
+      id: (Math.random() * 10000) << 0,
       title: '',
       content: '',
       tags: [],
@@ -140,15 +128,11 @@ export default function Home({ user }) {
           );
         }, true),
       );
-
-    CodeMirrorInstance.current.focus();
   }, [mutate]);
 
-  // eslint-disable-next-line
   const updateNote = useCallback(
     (note) => {
       compileMarkdown(note.content);
-      setCurrentNote(note);
 
       if (!note.id)
         return localStorage.setItem(
@@ -237,10 +221,6 @@ export default function Home({ user }) {
     () => (currentNote ? compileMarkdown(currentNote.content) : null),
     [currentNote, compileMarkdown],
   );
-  useEffect(
-    () => CodeMirrorInstance.current?.setValue(currentNote.content),
-    [isViewingMarkdown, currentNote],
-  );
 
   if (isError) return <h1>You probably, should&apos;t see this, D_D</h1>;
 
@@ -273,7 +253,7 @@ export default function Home({ user }) {
             ]({ notes, searchQuery, tag: currentTag })}
             search={searchQuery}
             currentNote={currentNote}
-            onSelectNote={(note) => selectNote(note)}
+            onSelectNote={(note) => setCurrentNote(note)}
             onDeleteNote={(note) => deleteNote(note)}
             onSearchChange={(noteTitle) => setSearchQuery(noteTitle)}
           ></NotesSidebar>
@@ -296,7 +276,6 @@ export default function Home({ user }) {
                   })
                 }
                 isVisible={!isViewingMarkdown}
-                CodeMirrorInstance={CodeMirrorInstance}
               ></CodeEditor>
             </div>
             <BottomBar
