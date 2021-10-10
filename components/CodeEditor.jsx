@@ -1,52 +1,31 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import CodeMirror from 'react-codemirror';
-import 'codemirror/mode/markdown/markdown';
-import 'codemirror/addon/comment/comment';
-import 'codemirror/addon/edit/closebrackets';
-import 'codemirror/addon/scroll/scrollpastend';
-import 'codemirror/addon/scroll/simplescrollbars';
-import 'codemirror/keymap/sublime';
+import { useMemo } from 'react';
+import TextareaEditor from '@uiw/react-textarea-code-editor';
 import { functions as helperFunctions } from '../helpers';
 
-const editorOptions = {
-  lineNumbers: true,
-  mode: 'markdown',
-  scrollPastEnd: true,
-  scrollbarStyle: 'simple',
-  comment: true,
-  smartIndent: true,
-  keyMap: 'sublime',
-  indentUnit: 2,
-  tabSize: 2,
-  theme: 'my-own-theme',
-};
-
-export default function CodeEditor({
-  value,
-  onChange,
-  isVisible,
-  CodeMirrorInstance,
-}) {
-  const editorRef = useRef();
-
+export default function CodeEditor({ value, onChange, isVisible }) {
   const emitChange = useMemo(
     () => helperFunctions.debounce((value) => onChange(value), 650),
     [onChange],
   );
 
-  useEffect(
-    () => (CodeMirrorInstance.current = editorRef.current.getCodeMirror()),
-    [CodeMirrorInstance, editorRef],
-  );
-
   return (
-    <div style={{ display: isVisible ? 'block' : 'none' }}>
-      <CodeMirror
-        ref={editorRef}
+    <div
+      style={
+        !isVisible
+          ? { position: 'absolute', left: '100%', width: 0, height: 0 }
+          : {}
+      }
+    >
+      <TextareaEditor
         value={value}
-        onChange={(code) => emitChange(code)}
-        options={editorOptions}
-      ></CodeMirror>
+        language="markdown"
+        onChange={({ target }) => emitChange(target.value)}
+        style={{
+          fontSize: 16,
+          fontFamily:
+            "'Operator Mono', 'Source Code Pro', Menlo, Monaco, Consolas, 'Courier New', monospace",
+        }}
+      ></TextareaEditor>
     </div>
   );
 }
