@@ -1,4 +1,4 @@
-import 'prismjs/themes/prism-okaidia.css';
+// import 'prismjs/themes/prism-okaidia.css';
 import styles from '../styles/Home.module.css';
 import Head from 'next/head';
 import dynamic from 'next/dynamic';
