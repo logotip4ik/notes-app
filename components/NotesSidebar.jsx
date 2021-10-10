@@ -1,5 +1,4 @@
 import styles from '../styles/NotesSidebar.module.scss';
-import { useCallback } from 'react';
 import { AnimateSharedLayout, motion } from 'framer-motion';
 import NoteSidebarItem from './NotesSidebarItem';
 
