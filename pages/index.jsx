@@ -239,7 +239,6 @@ export default function Home({ user }) {
             onSelectTag={(tag) => {
               setCurrentTag(tag);
               setSearchQuery('');
-              setCurrentNote(null);
             }}
             onCreateNote={() => addNewNote()}
           ></TagsSidebar>
