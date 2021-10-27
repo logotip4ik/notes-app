@@ -13,7 +13,7 @@ export default function CodeEditor({ value, onChange, isVisible }) {
       style={
         !isVisible
           ? { position: 'absolute', left: '100%', width: 0, height: 0 }
-          : {}
+          : { display: 'inline-block', width: '100%' }
       }
     >
       <TextareaEditor
@@ -21,7 +21,6 @@ export default function CodeEditor({ value, onChange, isVisible }) {
         language="markdown"
         onChange={({ target }) => emitChange(target.value)}
         style={{
-          display: 'inline-block',
           fontSize: 16,
           fontFamily:
             "'Operator Mono', 'Source Code Pro', Menlo, Monaco, Consolas, 'Courier New', monospace",

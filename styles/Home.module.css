@@ -26,6 +26,10 @@
 }
 
 .main__editors > div {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+
   overflow-y: auto;
   max-height: calc(100vh - var(--bottom-bar-height));
 
